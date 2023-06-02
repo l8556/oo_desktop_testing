@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "oo_desktop_testing"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.7"
 selenium = "*"
 pywin32 = { version = "*", markers = "sys_platform == 'win32'" }
 invoke = "*"

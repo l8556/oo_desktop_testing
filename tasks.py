@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from os import getcwd
-from os.path import join
 
 from invoke import task
+
+from frameworks.desktop.installer import Installer
+
 
 @task
 def desktop(c):
