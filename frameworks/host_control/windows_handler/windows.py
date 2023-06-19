@@ -141,7 +141,7 @@ class Window:
             event_handler: object() = None,
             max_waiting_time: int = 60,
             max_time_run_windows: int = 10
-    ) -> int | str:
+    ) -> "int | str":
         """
         :param window_title_text:
         :param max_time_run_windows: maximum waiting time in sec

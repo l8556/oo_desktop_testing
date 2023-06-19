@@ -15,7 +15,7 @@ from requests import get, head
 from rich import print
 from rich.progress import track
 
-from .HostInfo import HostInfo
+from .host_info import HostInfo
 
 
 class FileUtils:
@@ -39,7 +39,7 @@ class FileUtils:
     def make_tmp_file(path: str, tmp_dir: str = './tmp') -> str:
         FileUtils.create_dir(tmp_dir) if not exists(tmp_dir) else ...
         tmp_file_path = FileUtils.random_name(tmp_dir, path.split(".")[-1])
-        FileUtils.copy(path, tmp_file_path, silence=True)
+        FileUtils.copy(path, tmp_file_path, stdout=False)
         return tmp_file_path
 
     @staticmethod
@@ -60,7 +60,7 @@ class FileUtils:
     @staticmethod
     def get_paths(
             path: str,
-            extension: tuple | str = None,
+            extension: "tuple | str" = None,
             names: list = None,
             exceptions_files: list = None,
             exceptions_dirs: list = None,
@@ -88,7 +88,7 @@ class FileUtils:
 
     # path insert with file_name name
     @staticmethod
-    def copy(path_from, path_to, silence=False):
+    def copy(path_from, path_to, stdout=True):
         if not exists(path_from):
             return print(f"[bold red]|COPY WARNING| Path from not exist: {path_from}")
         if isdir(path_from):
@@ -96,13 +96,13 @@ class FileUtils:
         elif isfile(path_from):
             copyfile(path_from, path_to)
         if exists(path_to):
-            return print(f'[green]|INFO| Copied to: {path_to}') if not silence else ...
+            return print(f'[green]|INFO| Copied to: {path_to}') if stdout else ...
         return print(f'[bold red]|COPY WARNING| File not copied: {path_to}')
 
     @staticmethod
     def last_modified_file(dir_path):
         files = FileUtils.get_paths(dir_path, exceptions_files=['.DS_Store'])
-        return max(files, key=getctime) if files else print('[bold red]|WARNING| Last modified file_name not found')
+        return max(files, key=getctime) if files else print('[bold red]|WARNING| Last modified file not found')
 
     @staticmethod
     def move(path_from, path_to):
@@ -112,16 +112,16 @@ class FileUtils:
         return print(f"[bold red]|MOVE WARNING| File not exist: {path_from}")
 
     @staticmethod
-    def create_dir(dir_path: str | tuple, silence=False) -> None:
+    def create_dir(dir_path: "str | tuple", stdout=True) -> None:
         for _dir_path in dir_path if isinstance(dir_path, tuple) else [dir_path]:
             if not exists(_dir_path):
                 makedirs(_dir_path)
                 if isdir(_dir_path):
-                    print(f'[green]|INFO| Folder Created: {_dir_path}') if not silence else ...
+                    print(f'[green]|INFO| Folder Created: {_dir_path}') if stdout else ...
                     continue
                 print(f'[bold red]|WARNING| Create folder warning. Folder not created: {_dir_path}')
                 continue
-            print(f'[green]|INFO| Folder exists: {_dir_path}') if not silence else ...
+            print(f'[green]|INFO| Folder exists: {_dir_path}') if stdout else ...
 
     @staticmethod
     def unpacking_7zip(archive_path, execute_path, delete=False):
@@ -158,7 +158,7 @@ class FileUtils:
         FileUtils.delete(archive_path) if delete_archive else ...
 
     @staticmethod
-    def delete(path: str | tuple, all_from_folder: bool = False, silence: bool = False) -> None:
+    def delete(path: "str | tuple", all_from_folder: bool = False, silence: bool = False) -> None:
         for _path in path if isinstance(path, tuple) else [path]:
             if not exists(_path):
                 print(f"[bold red]|DELETE WARNING| Path not exist: {_path}") if not silence else ...
@@ -166,7 +166,7 @@ class FileUtils:
             if isdir(_path):
                 rmtree(_path, ignore_errors=True)
                 if all_from_folder:
-                    FileUtils.create_dir(_path, silence=True)
+                    FileUtils.create_dir(_path, stdout=False)
                     if any(scandir(_path)):
                         print(f"[bold red]|DELETE WARNING| Not all files are removed from directory: {_path}")
                         continue
@@ -216,7 +216,7 @@ class FileUtils:
 
     @staticmethod
     def download_file(url: str, dir_path: str, name: str = None) -> None:
-        FileUtils.create_dir(dir_path, silence=True)
+        FileUtils.create_dir(dir_path, stdout=False)
         _name = name if name else basename(url)
         file_path = join(dir_path, _name)
         with get(url, stream=True) as r:
@@ -230,7 +230,7 @@ class FileUtils:
             print(f"[red]|WARNING| Size different\nFile:{getsize(file_path)}\nOn server:{r.headers['Content-Length']}")
 
     @staticmethod
-    def find_in_line_by_key(text: str, key: str, split_by: str = '\n', separator: str = ':') -> str | None:
+    def find_in_line_by_key(text: str, key: str, split_by: str = '\n', separator: str = ':') -> "str | None":
         for line in text.split(split_by):
             if separator in line:
                 _key, value = line.strip().split(separator, 1)
