@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 import json
-import os
-from os.path import join, getsize, basename, isdir
+from os.path import join, getsize, basename, isdir, expanduser, isfile
 
 import requests
 from rich import print
-from loguru import logger
 
+import config
 from frameworks.StaticData import StaticData
 from frameworks.decorators import singleton
 from frameworks.host_control import FileUtils
@@ -15,10 +14,24 @@ from frameworks.host_control import FileUtils
 @singleton
 class Telegram:
     def __init__(self):
-        self._telegram_token = os.environ.get('TELEGRAM_TOKEN')
-        self._chat_id = os.environ.get('CHANNEL_ID')
+        self._telegram_token = self._get_token()
+        self._chat_id = self._get_chat_id()
         self.tmp_dir = StaticData.tmp_dir
-        FileUtils.create_dir(self.tmp_dir)
+        FileUtils.create_dir(self.tmp_dir, stdout=False)
+
+    @staticmethod
+    def _get_token():
+        path = join(expanduser('~'), '.telegram', 'token')
+        if isfile(path):
+            return FileUtils.file_reader(path).strip()
+        print(f"[cyan]|INFO|Telegram token not exists.")
+
+    @staticmethod
+    def _get_chat_id():
+        path = join(expanduser('~'), '.telegram', 'chat')
+        if isfile(path):
+            return FileUtils.file_reader(path).strip()
+        print(f"[cyan]|INFO|Telegram chat id not exists.")
 
     def send_message(self, message: str, out_msg=False) -> None:
         print(message) if out_msg else ...
@@ -64,10 +77,9 @@ class Telegram:
         try:
             response = requests.post(url, data=data, files=files)
             if response.status_code != 200:
-                logger.error(f"Error when sending a document")
+                print(f"[bold red]|ERROR|Error when sending to telegram: {response.status_code}. data: {data}")
                 self.send_message(f"Error when sending to telegram: {response.status_code}") if tg_log else ...
         except Exception as e:
-            logger.error(f"|WARNING|Impossible to send: {data}. Error: {e}")
             self.send_message(f"|WARNING|Impossible to send: {data}. Error: {e}") if tg_log else ...
 
     def _prepare_documents(self, doc_path: str) -> str:
