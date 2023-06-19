@@ -18,7 +18,7 @@ def singleton(class_):
     return getinstance
 
 
-def retry(max_attempts: int = 3, interval: int | float = 0, silence: bool = False, exception: bool = True):
+def retry(max_attempts: int = 3, interval: "int | float" = 0, stdout: bool = True, exception: bool = True):
     def wrapper(func):
         @wraps(func)
         def inner(*args, **kwargs):
@@ -27,7 +27,7 @@ def retry(max_attempts: int = 3, interval: int | float = 0, silence: bool = Fals
                     result = func(*args, **kwargs)
                 except Exception as e:
                     print(f"[cyan] |INFO| Exception when '{func.__name__}'. Try: {i + 1} of {max_attempts}.")
-                    print(f"[red]|WARNING| Error: {e}[/]") if not silence else ...
+                    print(f"[red]|WARNING| Error: {e}[/]") if stdout else ...
                     sleep(interval)
                 else:
                     return result
