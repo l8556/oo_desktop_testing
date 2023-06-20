@@ -9,6 +9,7 @@ from frameworks.StaticData import StaticData
 
 from os.path import join, dirname, realpath
 from frameworks.host_control import FileUtils, HostInfo
+from frameworks.image_handler import Image
 from rich import print
 
 from selenium.webdriver.chrome.options import Options
@@ -88,10 +89,16 @@ class DesktopTest:
             )
 
     def _write_results(self, results):
-        Telegram().send_message(
-            f'Package: `{self.package.name.replace("_", "-")}`\n'
+        desktop_screen = join(StaticData.reports_dir, f'{self.version}_{HostInfo().name(pretty=True)}_desktop_screen.png')
+        Image.make_screenshot(f"{desktop_screen}")
+        browser_screen = join(StaticData.reports_dir, f'{self.version}_{HostInfo().name(pretty=True)}_browser_screen.png')
+        self.chrome.make_screenshot(browser_screen)
+        Telegram().send_media_group(
+            document_paths=[desktop_screen, browser_screen],
+            caption=f'Package: `{self.package.name.replace("_", "-")}`\n'
             f'Version: `{self.version}`\n'
             f'Os: `{HostInfo().name(pretty=True)}`\n'
-            f'Result: `{results}`'
+            f'Result: `{results}`',
+            media_type='photo'
         )
         self.report.write(self.package.name, self.version, HostInfo().name(pretty=True), results)
