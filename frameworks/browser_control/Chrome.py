@@ -35,6 +35,9 @@ class Chrome:
         for i in range(clicks):
             button.click()
 
+    def make_screenshot(self, path: str) -> None:
+        self.driver.save_screenshot(path)
+
     def get_element(
             self,
             xpath: str = None,
@@ -79,4 +82,3 @@ class Chrome:
 
     def minimize_window(self) -> None:
         self.driver.minimize_window()
-
