@@ -98,17 +98,19 @@ class DesktopTest:
 
     def _write_results(self, results):
         self.report.write(self.package.name, self.version, HostInfo().name(pretty=True), results)
-        host_name = re.sub(r"[\s/]", "", HostInfo().name(pretty=True))
-        img_name = f'{self.version}_{host_name}'
-        desktop_screen = join(self.report.dir, f'{img_name}_desktop_screen.png')
-        Image.make_screenshot(f"{desktop_screen}")
-        browser_screen = join(self.report.dir, f'{img_name}_browser_screen.png')
-        self.chrome.make_screenshot(f"{browser_screen}")
         pkg_name = re.sub(r"[\s/_]", "", self.package.name)
         Telegram().send_media_group(
-            document_paths=[desktop_screen, browser_screen, self.report.path],
+            document_paths=self._get_report_files(),
             caption=f'Package: `{pkg_name}`\n'
                     f'Version: `{self.version}`\n'
                     f'Os: `{HostInfo().name(pretty=True)}`\n'
                     f'Result: `{results if results == "Passed" else "Error"}`'
         )
+
+    def _get_report_files(self):
+        host_name = re.sub(r"[\s/]", "", HostInfo().name(pretty=True))
+        desktop_screen = join(self.report.dir, f'{self.version}_{host_name}_desktop_screen.png')
+        Image.make_screenshot(f"{desktop_screen}")
+        browser_screen = join(self.report.dir, f'{self.version}_{host_name}_browser_screen.png')
+        self.chrome.make_screenshot(f"{browser_screen}")
+        return [browser_screen, desktop_screen, self.report.path]
