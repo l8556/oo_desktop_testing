@@ -16,7 +16,15 @@ from selenium.webdriver.chrome.options import Options
 class Chrome:
     def __init__(self, chrome_options: Options = None):
         self.options = chrome_options
-        self.driver = self._load_driver(path=join(dirname(realpath(__file__)), 'assets', 'web_driver', HostInfo().os, 'chromedriver'))
+        self.driver = self._load_driver(path=self._generate_driver_path())
+
+    @staticmethod
+    def _generate_driver_path():
+        if HostInfo().version in ['16.04']:
+            return join(dirname(realpath(__file__)), 'assets', 'web_driver', 'linux_old', 'chromedriver')
+        else:
+            return join(dirname(realpath(__file__)), 'assets', 'web_driver', HostInfo().os, 'chromedriver')
+
 
     def _load_driver(self, path) -> WebDriver:
         if isfile(path):

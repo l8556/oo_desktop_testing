@@ -3,6 +3,10 @@
     "http://127.0.0.1:8080/undefined - Failed to load resource: the server responded with a status of 404 (Not Found)",
     "http://127.0.0.1:8080/favicon.ico - Failed to load resource: the server responded with a status of 404 (Not Found)",
     "http://127.0.0.1:8080/devtools/core/host/host.js 0 Not allowed to load local resource: file:///opt/onlyoffice/desktopeditors/bootstrap-select.min.js.map",
-    "chrome-error://chromewebdata/ 6579:1640 \"crbug/1173575, non-JS module files deprecated.\""
+    "chrome-error://chromewebdata/ 6579:1640 \"crbug/1173575, non-JS module files deprecated.\"",
+    "chrome-error://chromewebdata/ 5552:22 \"crbug/1173575, non-JS module files deprecated.\"",
+    "chrome-error://chromewebdata/ 5552:22 \"crbug/1173575, non-JS module files deprecated.\"",
+    "chrome-error://chromewebdata/ 5552:22 \"crbug/1173575, non-JS module files deprecated.\"",
+    "http://127.0.0.1:8080/devtools/core/host/host.js 0 Fetch API cannot load file:///opt/onlyoffice/desktopeditors/bootstrap-select.min.js.map. URL scheme must be \"http\" or \"https\" for CORS request."
     ]
 }
