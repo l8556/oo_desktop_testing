@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 from dataclasses import dataclass
 from frameworks.browser_control import Chrome
 from frameworks.decorators.decorators import retry
@@ -8,7 +9,7 @@ import time
 from frameworks.StaticData import StaticData
 
 from os.path import join, dirname, realpath
-from frameworks.host_control import FileUtils, HostInfo
+from frameworks.host_control import FileUtils, HostInfo, Window
 from frameworks.image_handler import Image
 from rich import print
 
@@ -37,8 +38,6 @@ class DesktopTest:
     @staticmethod
     def _chrome_options():
         chrome_options = Options()
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
         return chrome_options
 
 
@@ -54,7 +53,7 @@ class DesktopTest:
 
     def check_errors(self):
         self.connection_debug_mode()
-        time.sleep(5)
+        time.sleep(8)
         errors = self.check_console_log()
         if errors:
             self._write_results(f'console_errors: {errors}')
@@ -89,16 +88,18 @@ class DesktopTest:
             )
 
     def _write_results(self, results):
-        desktop_screen = join(StaticData.reports_dir, f'{self.version}_{HostInfo().name(pretty=True)}_desktop_screen.png')
-        Image.make_screenshot(f"{desktop_screen}")
-        browser_screen = join(StaticData.reports_dir, f'{self.version}_{HostInfo().name(pretty=True)}_browser_screen.png')
-        self.chrome.make_screenshot(browser_screen)
-        Telegram().send_media_group(
-            document_paths=[desktop_screen, browser_screen],
-            caption=f'Package: `{self.package.name.replace("_", "-")}`\n'
-            f'Version: `{self.version}`\n'
-            f'Os: `{HostInfo().name(pretty=True)}`\n'
-            f'Result: `{results}`',
-            media_type='photo'
-        )
         self.report.write(self.package.name, self.version, HostInfo().name(pretty=True), results)
+        host_name = re.sub(r"[\s/]", "", HostInfo().name(pretty=True))
+        img_name = f'{self.version}_{host_name}'
+        desktop_screen = join(self.report.dir, f'{img_name}_desktop_screen.png')
+        Image.make_screenshot(f"{desktop_screen}")
+        browser_screen = join(self.report.dir, f'{img_name}_browser_screen.png')
+        self.chrome.make_screenshot(f"{browser_screen}")
+        pkg_name = re.sub(r"[\s/_]", "", self.package.name)
+        Telegram().send_media_group(
+            document_paths=[desktop_screen, browser_screen, self.report.path],
+            caption=f'Package: `{pkg_name}`\n'
+                    f'Version: `{self.version}`\n'
+                    f'Os: `{HostInfo().name(pretty=True)}`\n'
+                    f'Result: `{results if results == "Passed" else "Error"}`'
+        )

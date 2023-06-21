@@ -17,7 +17,7 @@ class Package:
     def __init__(self, config_data: DesktopData, sudo_password: str = None):
         self.pwd = sudo_password
         self.generator = UrlGenerator(config_data.version)
-        self.os = HostInfo().os
+        self.os = HostInfo().name(pretty=True)
         self.url =  self.generator.url
         self.name = self.generator.package_name
         self.version = config_data.version
