@@ -34,6 +34,8 @@ class DesktopTest:
         self.display.start()
         self.chrome = Chrome(chrome_options=self._chrome_options())
         self.exceptions: list = FileUtils.read_json(join(dirname(realpath(__file__)), 'assets', 'console_exceptions.json'))['console_exceptions']
+        self.window = Window()
+        self.window_id = None
 
     @staticmethod
     def _chrome_options():
@@ -45,15 +47,22 @@ class DesktopTest:
         self.package.get()
         self.check_installed()
         self.desktop.open()
+        self.check_open_editor()
         self.check_errors()
         self._write_results(f'Passed')
         self.desktop.close()
         self.chrome.close()
         self.display.stop()
 
+    def check_open_editor(self):
+        self.window_id = self.window.wait_until_open(('DesktopEditors', 'ONLYOFFICE Desktop Editors'))
+        time.sleep(8)
+        if not self.window.get_hwnd(('DesktopEditors', 'ONLYOFFICE Desktop Editors')):
+            self._write_results(f"NotOpened")
+            raise
+
     def check_errors(self):
         self.connection_debug_mode()
-        time.sleep(8)
         errors = self.check_console_log()
         if errors:
             self._write_results(f'console_errors: {errors}')
