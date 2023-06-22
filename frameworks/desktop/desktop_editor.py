@@ -7,9 +7,11 @@ class DesktopEditor:
         self.debug_mode = debug_mode
         self.os = HostInfo().os
 
-    def open(self):
+    def open(self, file_path: str = None):
         Popen(
-            f"{self._generate_running_command()} {'--ascdesktop-support-debug-info' if self.debug_mode else ''}",
+            f"{self._generate_running_command()} "
+            f"{'--ascdesktop-support-debug-info' if self.debug_mode else ''} "
+            f"{file_path if file_path else ''}".strip(),
             shell=True
         )
 

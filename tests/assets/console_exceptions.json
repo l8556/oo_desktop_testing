@@ -7,6 +7,8 @@
     "chrome-error://chromewebdata/ 5552:22 \"crbug/1173575, non-JS module files deprecated.\"",
     "chrome-error://chromewebdata/ 5552:22 \"crbug/1173575, non-JS module files deprecated.\"",
     "chrome-error://chromewebdata/ 5552:22 \"crbug/1173575, non-JS module files deprecated.\"",
-    "http://127.0.0.1:8080/devtools/core/host/host.js 0 Fetch API cannot load file:///opt/onlyoffice/desktopeditors/bootstrap-select.min.js.map. URL scheme must be \"http\" or \"https\" for CORS request."
+    "http://127.0.0.1:8080/devtools/core/host/host.js 0 Fetch API cannot load file:///opt/onlyoffice/desktopeditors/bootstrap-select.min.js.map. URL scheme must be \"http\" or \"https\" for CORS request.",
+    "http://127.0.0.1:8080/devtools/core/host/host.js 0 Fetch API cannot load file:///opt/onlyoffice/desktopeditors/editors/web-apps/vendor/socketio/socket.io.min.js.map. URL scheme must be \"http\" or \"https\" for CORS request.",
+    "http://127.0.0.1:8080/devtools/core/host/host.js 0 Not allowed to load local resource: file:///opt/onlyoffice/desktopeditors/editors/web-apps/vendor/socketio/socket.io.min.js.map"
     ]
 }

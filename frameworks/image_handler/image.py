@@ -32,17 +32,19 @@ class Image:
         return None
 
     @staticmethod
-    def is_image_present(window_coordinates: tuple, template_path: str, threshold: "int | float" = 0.8) -> bool:
+    def is_image_present(template_path: str, window_coordinates: tuple = None, threshold: "int | float" = 0.8) -> bool:
         window = cv2.cvtColor(Image.grab_coordinate(window_coordinates), cv2.COLOR_BGR2GRAY)
         template = cv2.cvtColor(cv2.imread(template_path), cv2.COLOR_BGR2GRAY)
         _, max_val, _, _ = cv2.minMaxLoc(cv2.matchTemplate(window, template, cv2.TM_CCOEFF_NORMED))
         return True if max_val >= threshold else False
 
     @staticmethod
-    def grab_coordinate(window_coordinates: tuple) -> np.array:
-        left, top, right, bottom = window_coordinates
+    def grab_coordinate(window_coordinates: tuple = None, monitor_num: int = 1) -> np.array:
         with mss.mss() as sct:
-            return np.array(sct.grab({"left": left, "top": top, "width": right - left, "height": bottom - top}))
+            if isinstance(window_coordinates, tuple):
+                left, top, right, bottom = window_coordinates
+                return np.array(sct.grab({"left": left, "top": top, "width": right - left, "height": bottom - top}))
+            return np.array(sct.grab(sct.monitors[monitor_num]))
 
     @staticmethod
     def find_contours(img):
