@@ -63,9 +63,10 @@ class Telegram:
                 files[basename(doc_path)] = open(self._prepare_documents(doc_path), 'rb')
                 media.append(dict(type=media_type, media=f'attach://{basename(doc_path)}'))
             media[-1]['caption'] = self._prepare_caption(caption) if caption is not None else ''
+            media[-1]['parse_mode'] = "Markdown"
             self._request(
                 f'https://api.telegram.org/bot{self._telegram_token}/sendMediaGroup',
-                data={'chat_id': self._chat_id, 'media': json.dumps(media), "parse_mode": "Markdown"},
+                data={'chat_id': self._chat_id, 'media': json.dumps(media)},
                 files=files
             )
 

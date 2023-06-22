@@ -8,9 +8,9 @@ from tests.tools.report import Report
 
 class DesktopReport:
     def __init__(self, reports_dir: str, version: str):
-        self.report_dir = reports_dir
-        self.path = join(self.report_dir, f"{version}_desktop_report.csv")
-        FileUtils.create_dir(self.report_dir, stdout=False)
+        self.dir = join(reports_dir, version)
+        self.path = join(self.dir, f"{version}_desktop_report.csv")
+        FileUtils.create_dir(self.dir, stdout=False)
         self._writer(self.path, 'w', ['Package_name', 'Version', 'Os', 'Exit_code'])
 
     def write(self, package_name: str, version: str, os: str, exit_code: str):
