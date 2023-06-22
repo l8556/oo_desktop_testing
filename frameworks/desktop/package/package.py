@@ -74,9 +74,14 @@ class Package:
         else:
             print(f"[red]|ERROR|Package not exists.")
 
-
     def _get_install_command(self):
         if HostInfo().name().lower() in ['debian', 'ubuntu']:
             return f'sudo dpkg -i {join(self.download_dir, self.name)}'
         elif HostInfo().name().lower() in ['centos', 'redos']:
             return f'sudo dnf localinstall {join(self.download_dir, self.name)} -y'
+        elif HostInfo().name().lower() in ['altlinux']:
+            return f'sudo rpm -i {join(self.download_dir, self.name)}'
+        else:
+            raise print(f"[red]|ERROR| Unable to generate a command to install the desktop package.\n"
+                        f"distributive: {HostInfo().name().lower()}\n"
+                        f"version: {HostInfo().version}")
