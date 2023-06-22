@@ -10,7 +10,6 @@ from shutil import move, copytree, copyfile, rmtree
 from subprocess import Popen, PIPE, getoutput
 
 import psutil
-import py7zr
 from requests import get, head
 from rich import print
 from rich.progress import track
@@ -122,14 +121,6 @@ class FileUtils:
                 print(f'[bold red]|WARNING| Create folder warning. Folder not created: {_dir_path}')
                 continue
             print(f'[green]|INFO| Folder exists: {_dir_path}') if stdout else ...
-
-    @staticmethod
-    def unpacking_7zip(archive_path, execute_path, delete=False):
-        print(f'[green]|INFO| Unpacking {basename(archive_path)}.')
-        with py7zr.SevenZipFile(archive_path, 'r') as archive:
-            archive.extractall(path=execute_path)
-            print(f'[green]|INFO| Unpack Completed to: {execute_path}')
-        FileUtils.delete(archive_path, silence=True) if delete else ...
 
     @staticmethod
     def compress_files(path, archive_path=None, delete=False):

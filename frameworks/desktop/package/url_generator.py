@@ -17,7 +17,7 @@ class UrlGenerator:
     def distributive(self):
         if HostInfo().name().lower() in ['debian', 'ubuntu']:
             return 'debian'
-        elif HostInfo().name().lower() in ['centos']:
+        elif HostInfo().name().lower() in ['centos', 'redos']:
             return 'rhel'
 
     @property
@@ -34,7 +34,7 @@ class UrlGenerator:
 
             # CentOS rpm packages
             elif self.distributive in ['rhel']:
-                if HostInfo().version in ['9']:
+                if HostInfo().version in ['9', '7.3.2']:
                     return f'onlyoffice-desktopeditors-{self._url_version}~cef107.el7.x86_64.rpm'
                 return f'onlyoffice-desktopeditors-{self._url_version}.el7.x86_64.rpm '
 

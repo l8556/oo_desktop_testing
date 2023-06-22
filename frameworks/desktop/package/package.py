@@ -1,4 +1,5 @@
 import re
+import time
 from subprocess import call
 
 
@@ -75,8 +76,7 @@ class Package:
 
 
     def _get_install_command(self):
-        sudo = 'sudo '
         if HostInfo().name().lower() in ['debian', 'ubuntu']:
-            return f'{sudo}dpkg -i {join(self.download_dir, self.name)}'
-        elif HostInfo().name().lower() in ['centos']:
-            return f'{sudo}dnf localinstall {join(self.download_dir, self.name)} -y'
+            return f'sudo dpkg -i {join(self.download_dir, self.name)}'
+        elif HostInfo().name().lower() in ['centos', 'redos']:
+            return f'sudo dnf localinstall {join(self.download_dir, self.name)} -y'
