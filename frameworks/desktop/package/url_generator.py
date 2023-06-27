@@ -19,6 +19,8 @@ class UrlGenerator:
             return 'debian'
         elif HostInfo().name().lower() in ['centos', 'redos', 'altlinux']:
             return 'rhel'
+        elif HostInfo().name().lower() in ['opensuse']:
+            return 'suse'
         else:
             raise print(f"[red]|ERROR| Can't verify os distributive for download desktop package.\n"
                         f"distributive: {HostInfo().name().lower()}\n"
@@ -26,7 +28,7 @@ class UrlGenerator:
 
     @property
     def url(self):
-        return f"{self.host}/{self._os}/{self.distributive}/{self.package_name}"
+        return f"{self.host}/{self._os}/{self.distributive}/{self.package_name}".strip()
 
     @property
     def package_name(self):
@@ -44,7 +46,9 @@ class UrlGenerator:
 
             # SUSE Linux rpm packages
             elif self.distributive in ['suse']:
-                ...
+                if HostInfo().version in []:
+                    return 'onlyoffice-desktopeditors-7.4.0-166.suse12.x86_64.rpm'
+                return 'onlyoffice-desktopeditors-7.4.0-166~cef107.suse12.x86_64.rpm'
 
             # Portable
             elif self.distributive in ['generic']:

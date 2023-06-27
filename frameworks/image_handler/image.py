@@ -62,7 +62,7 @@ class Image:
     #     return structural_similarity(before, after, full=True)
 
     @staticmethod
-    def draw_differences(img_1: np.ndarray, img_2: np.ndarray, diff: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def draw_differences(img_1: np.ndarray, img_2: np.ndarray, diff: np.ndarray) -> "tuple[np.ndarray, np.ndarray]":
         thresh = cv2.threshold((diff * 255).astype("uint8"), 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
         contours = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         for contur in contours[0] if len(contours) == 2 else contours[1]:

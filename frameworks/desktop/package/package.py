@@ -79,7 +79,7 @@ class Package:
             return f'sudo dpkg -i {join(self.download_dir, self.name)}'
         elif HostInfo().name().lower() in ['centos', 'redos']:
             return f'sudo dnf localinstall {join(self.download_dir, self.name)} -y'
-        elif HostInfo().name().lower() in ['altlinux']:
+        elif HostInfo().name().lower() in ['altlinux', 'opensuse']:
             return f'sudo rpm -i {join(self.download_dir, self.name)}'
         else:
             raise print(f"[red]|ERROR| Unable to generate a command to install the desktop package.\n"
