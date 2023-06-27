@@ -58,7 +58,7 @@ class DesktopTest:
     def check_open_files(self):
         for file in FileUtils.get_paths(self.good_files):
             self.desktop.open(file)
-            time.sleep(15) # TODO
+            time.sleep(20) # TODO
             self.check_error_on_screen()
             Image.make_screenshot(f"{join(self.report.dir, f'{self.version}_{self.host_name}_{basename(file)}.png')}")
             # self.check_js_console()
