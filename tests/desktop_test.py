@@ -25,14 +25,16 @@ class XPath:
     hello_document: str = '//*[@id="items"]/p/a/div'
 
 class DesktopTest:
-    def __init__(self, version: str, sudo_password: str = None):
+    def __init__(self, version: str, sudo_password: str = None, display_on: bool = True):
+        self.display_on = display_on
         self.version = version
         self.report = DesktopReport(StaticData.reports_dir, self.version)
         self.host_name = re.sub(r"[\s/]", "", HostInfo().name(pretty=True))
         self.package = Package(DesktopData(tmp_dir=StaticData.tmp_dir, version=self.version, cache_dir=StaticData.cache_dir), sudo_password=sudo_password)
         self.desktop = DesktopEditor(debug_mode=True)
-        self.display = Display(visible=0, size=(1920, 1080))
-        self.display.start()
+        if self.display_on:
+            self.display = Display(visible=0, size=(1920, 1080))
+            self.display.start()
         self.exceptions: list = FileUtils.read_json(join(dirname(realpath(__file__)), 'assets', 'console_exceptions.json'))['console_exceptions']
         self.window = Window()
         self.window_id = None
@@ -53,10 +55,12 @@ class DesktopTest:
         self.check_open_files()
         self._write_results(f'Passed')
         self.desktop.close()
-        self.display.stop()
+        if self.display_on:
+            self.display.stop()
 
     def check_open_files(self):
         for file in FileUtils.get_paths(self.good_files):
+            print(f"[green]|INFO| Test opening file: {basename(file)}")
             self.desktop.open(file)
             time.sleep(20) # TODO
             self.check_error_on_screen()
