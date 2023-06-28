@@ -34,7 +34,7 @@ class UrlGenerator:
     def package_name(self):
             # deb packages
             if self.distributive in ['debian']:
-                if HostInfo().name().lower() == 'ubuntu' and HostInfo().version in ['22.04']:
+                if HostInfo().name().lower() == 'ubuntu' and HostInfo().version in ['22.04'] or HostInfo().name().lower() == 'debian' and HostInfo().version in ['12']:
                     return f"onlyoffice-desktopeditors_{self._url_version}~cef107_amd64.deb"
                 return f"onlyoffice-desktopeditors_{self._url_version}_amd64.deb"
 
