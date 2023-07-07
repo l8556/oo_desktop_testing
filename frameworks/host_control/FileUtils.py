@@ -114,7 +114,7 @@ class FileUtils:
     def create_dir(dir_path: "str | tuple", stdout=True) -> None:
         for _dir_path in dir_path if isinstance(dir_path, tuple) else [dir_path]:
             if not exists(_dir_path):
-                makedirs(_dir_path)
+                makedirs(_dir_path, exist_ok=True)
                 if isdir(_dir_path):
                     print(f'[green]|INFO| Folder Created: {_dir_path}') if stdout else ...
                     continue

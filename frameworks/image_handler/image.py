@@ -3,7 +3,6 @@
 import cv2
 import numpy as np
 
-# from skimage.metrics import structural_similarity
 import mss
 import mss.tools
 
@@ -55,11 +54,6 @@ class Image:
             x, y, w, h = cv2.boundingRect(contour)
             if h >= 500:
                 return rgb[y:y + h, x:x + w]
-
-    # @staticmethod
-    # def find_difference(img_1: np.ndarray, img_2: np.ndarray) -> float:
-    #     before, after = cv2.cvtColor(img_1, cv2.COLOR_BGR2GRAY), cv2.cvtColor(img_2, cv2.COLOR_BGR2GRAY)
-    #     return structural_similarity(before, after, full=True)
 
     @staticmethod
     def draw_differences(img_1: np.ndarray, img_2: np.ndarray, diff: np.ndarray) -> "tuple[np.ndarray, np.ndarray]":
