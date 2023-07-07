@@ -1,62 +1,46 @@
 # -*- coding: utf-8 -*-
 import re
-from dataclasses import dataclass
-from frameworks.browser_control import Chrome
-from frameworks.decorators.decorators import retry
-from frameworks.desktop import Package, DesktopEditor, DesktopData
+from frameworks.desktop import Package, DesktopEditor, DesktopData, OnlyOfficePortal
 
 import time
 from frameworks.StaticData import StaticData
 
-from os.path import join, dirname, realpath, basename
-from frameworks.host_control import FileUtils, HostInfo, Window
+from os.path import join, basename
+from frameworks.host_control import FileUtils, HostInfo
 from frameworks.image_handler import Image
 from rich import print
+from rich.console import Console
 
-from selenium.webdriver.chrome.options import Options
 from pyvirtualdisplay import Display
 
 from frameworks.telegram import Telegram
 from tests.tools.desktop_report import DesktopReport
 
-
-@dataclass(frozen=True)
-class XPath:
-    hello_document: str = '//*[@id="items"]/p/a/div'
+console = Console()
 
 class DesktopTest:
-    def __init__(self, version: str, sudo_password: str = None, display_on: bool = True):
-        self.display_on = display_on
+    def __init__(self, version: str, custom_config: str = None, display_on: bool = True, telegram: bool = False):
+        self.telegram_report = telegram
         self.version = version
+        self.display_on = display_on
+        self.portal_config = join(StaticData.project_dir, 'portal_config.json')
+        self.package = self._package(version, custom_config)
+        self._create_display()
         self.report = DesktopReport(StaticData.reports_dir, self.version)
         self.host_name = re.sub(r"[\s/]", "", HostInfo().name(pretty=True))
-        self.package = Package(DesktopData(tmp_dir=StaticData.tmp_dir, version=self.version, cache_dir=StaticData.cache_dir), sudo_password=sudo_password)
         self.desktop = DesktopEditor(debug_mode=True)
-        if self.display_on:
-            self.display = Display(visible=0, size=(1920, 1080))
-            self.display.start()
-        self.exceptions: list = FileUtils.read_json(join(dirname(realpath(__file__)), 'assets', 'console_exceptions.json'))['console_exceptions']
-        self.window = Window()
-        self.window_id = None
         self.img_dir = StaticData.img_template
         self.bad_files = StaticData.bad_files_dir
         self.good_files = StaticData.good_files_dir
 
-    @staticmethod
-    def _chrome_options():
-        chrome_options = Options()
-        return chrome_options
-
     def run(self):
         self.package.get()
         self.check_installed()
-        self.desktop.open()
-        self.check_errors()
+        self.wait_until_open(self.desktop.open(), '[DesktopEditors]: start page loaded')
         self.check_open_files()
         self._write_results(f'Passed')
         self.desktop.close()
-        if self.display_on:
-            self.display.stop()
+        self.display.stop() if self.display_on else ...
 
     def check_open_files(self):
         for file in FileUtils.get_paths(self.good_files):
@@ -65,62 +49,35 @@ class DesktopTest:
             time.sleep(20) # TODO
             self.check_error_on_screen()
             Image.make_screenshot(f"{join(self.report.dir, f'{self.version}_{self.host_name}_{basename(file)}.png')}")
-            # self.check_js_console()
-
-    def check_errors(self):
-        self.check_open_editor_window()
-        self.check_error_on_screen()
-        self.check_js_console()
 
     def check_error_on_screen(self):
         for img in FileUtils.get_paths(join(self.img_dir, 'errors')):
             if Image.is_image_present(img):
                 Image.make_screenshot(f"{join(self.report.dir, f'{self.version}_{self.host_name}_error_screen.png')}")
                 self._write_results('ERROR_ON_SCREEN')
-                raise print(f"[red]|ERROR| Error on image.")
+                raise print(f"[red]|ERROR| An error has been detected.")
 
-    def check_open_editor_window(self):
-        self.window_id = self.window.wait_until_open(('DesktopEditors', 'ONLYOFFICE Desktop Editors'))
-        time.sleep(8) # TODO
-        if not self.window.get_hwnd(('DesktopEditors', 'ONLYOFFICE Desktop Editors')):
-            Image.make_screenshot(f"{join(self.report.dir, f'{self.version}_{self.host_name}_open_editor.png')}")
-            self._write_results(f"NotOpened")
-            raise
-        Image.make_screenshot(f"{join(self.report.dir, f'{self.version}_{self.host_name}_open_editor.png')}")
-
-    def check_js_console(self):
-        chrome = Chrome(chrome_options=self._chrome_options())
-        self._connection_debug_mode(chrome)
-        errors = self._check_console_log(chrome)
-        chrome.make_screenshot(f"{join(self.report.dir, f'{self.version}_{self.host_name}_browser_screen.png')}")
-        if errors:
-            self._write_results(f'console_errors: {errors}')
-            chrome.close()
-            raise print(f"[bold red]|ERROR| OnOnlyOffice Desktop opens with errors in the js console")
-        chrome.close()
-
-    @retry(max_attempts=50, interval=2, stdout=False)
-    def _connection_debug_mode(self, chrome):
-        chrome.open('http://127.0.0.1:8080')
-        chrome.click_by_xpath(XPath.hello_document)
-        time.sleep(2)
-
-    def _check_console_log(self, chrome) -> list:
-        js_logs = chrome.get_js_log()
-        chrome.driver.execute_script("console.clear();")
-        errors = []
-        for log in js_logs:
-            if log['message'] in self.exceptions:
-                print(f"[green]|CONSOLE LOG| {log['message']}")
+    def wait_until_open(self, process, wait_msg, timeout=30):
+        start_time = time.time()
+        with console.status('') as status:
+            while time.time() - start_time < timeout:
+                status.update(f'[green]|INFO| Wait until the editor opens')
+                output = process.stdout.readline().decode().strip()
+                errors = process.stderr.readline().decode().strip()
+                console.print(errors) if errors else ...
+                if output:
+                    console.print(f"[cyan]|INFO|{output}")
+                    if wait_msg in output:
+                        self.check_error_on_screen()
+                        break
             else:
-                errors.append(log['message'])
-                print(f"[bold red]{'-'*90}\n|CONSOLE LOG||ERROR| {log['message']}\n{'-'*90}")
-        return errors
+                self._write_results('NOT_OPENED')
+                raise console.print("[red]|ERROR| Can't open editor ")
+            Image.make_screenshot(f"{join(self.report.dir, f'{self.version}_{self.host_name}_open_editor.png')}")
 
     def check_installed(self):
         installed_version = self.package.get_version()
         if self.version != installed_version:
-            Image.make_screenshot(f"{join(self.report.dir, f'{self.version}_{self.host_name}_desktop_screen.png')}")
             self._write_results('NOT_INSTALLED')
             raise print(
                 f"[bold red]|ERROR| OnlyOffice Desktop not installed. "
@@ -128,15 +85,37 @@ class DesktopTest:
             )
 
     def _write_results(self, results):
-        self.report.write(self.package.name, self.version, HostInfo().name(pretty=True), results)
+        self.report.write(HostInfo().name(pretty=True), self.version, self.package.name, results)
+        if self.telegram_report:
+            self._send_report_to_telegram(results)
+
+    def _send_report_to_telegram(self, results: str):
         pkg_name = re.sub(r"[\s/_]", "", self.package.name)
         Telegram().send_media_group(
             document_paths=self._get_report_files(),
-            caption=f'Package: `{pkg_name}`\n'
+            caption=f'Os: `{HostInfo().name(pretty=True)}`\n'
                     f'Version: `{self.version}`\n'
-                    f'Os: `{HostInfo().name(pretty=True)}`\n'
+                    f'Package: `{pkg_name}`\n'
                     f'Result: `{results if results == "Passed" else "Error"}`'
         )
 
     def _get_report_files(self):
         return sorted(FileUtils.get_paths(self.report.dir), key=lambda x: x.endswith('.csv'))
+
+    @staticmethod
+    def _package(version: str, custom_config: str) -> Package:
+        return Package(
+            OnlyOfficePortal(version, custom_config),
+            DesktopData(
+                tmp_dir=StaticData.tmp_dir,
+                version=version,
+                cache_dir=StaticData.cache_dir
+            )
+        )
+
+    def _create_display(self):
+        if self.display_on:
+            self.display = Display(visible=0, size=(1920, 1080))
+            self.display.start()
+        else:
+            print("[red]|INFO| Test running without virtual display")
