@@ -6,7 +6,8 @@ from frameworks.host_control import HostInfo, FileUtils
 
 
 class DesktopEditor:
-    def __init__(self, debug_mode: bool = False):
+    def __init__(self, debug_mode: bool = False, custom_config: str = None):
+        self.custom_config = custom_config
         self.debug_mode = debug_mode
         self.os = HostInfo().os
         self.tmp_dir = join(os.getcwd(), "tmp")
@@ -40,10 +41,15 @@ class DesktopEditor:
 
     def _generate_running_command(self):
         if self.os == 'linux':
+            if self.custom_config:
+                return FileUtils.read_json(self.custom_config)['linux_run_command']
             return 'onlyoffice-desktopeditors'
         elif self.os == 'mac':
+            if self.custom_config:
+                return FileUtils.read_json(self.custom_config)['mac_run_command']
             return '/Applications/ONLYOFFICE.app/Contents/MacOS/ONLYOFFICE'
         elif self.os == 'windows':
-            ...
+            if self.custom_config:
+                return FileUtils.read_json(self.custom_config)['windows_run_command']
         else:
             raise print(f"[red]|ERROR| Can't verify OS")

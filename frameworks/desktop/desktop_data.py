@@ -5,3 +5,4 @@ class DesktopData(NamedTuple):
     version: str
     tmp_dir: str
     cache_dir: str = None
+    custom_config: str = None
