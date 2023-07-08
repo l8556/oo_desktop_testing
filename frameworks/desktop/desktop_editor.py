@@ -26,7 +26,7 @@ class DesktopEditor:
         return process
 
     def version(self) -> "str | None":
-        version = re.findall(r"\d+\.\d+\.\d+\.\d+", FileUtils.output_cmd(f'{self._generate_running_command} --version'))
+        version = re.findall(r"\d+\.\d+\.\d+\.\d+", FileUtils.output_cmd(f'{self._generate_running_command()} --version'))
         return version[0] if version else None
 
     def close(self):
