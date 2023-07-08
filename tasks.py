@@ -8,7 +8,7 @@ from tests.desktop_test import DesktopTest
 
 
 @task
-def desktop_test(c, version=None, display=False, custom_config=None, telegram=False):
+def desktop_test(c, version=None, display=False, custom_config=False, telegram=False):
     DesktopTest(
         version=version,
         display_on=True if not display else False,
