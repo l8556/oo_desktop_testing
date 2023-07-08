@@ -34,13 +34,19 @@ class DesktopTest:
         self.good_files = StaticData.good_files_dir
 
     def run(self):
-        self.package.get()
+        self._install_package()
         self.check_installed()
         self.wait_until_open(self.desktop.open(), '[DesktopEditors]: start page loaded')
         self.check_open_files()
         self._write_results(f'Passed')
         self.desktop.close()
         self.display.stop() if self.display_on else ...
+
+    def _install_package(self):
+        if self.version == self.desktop.version():
+            print(f'[green]|INFO| OnlyOffice Desktop version: {self.version} already installed[/]')
+            return
+        self.package.get()
 
     def check_open_files(self):
         for file in FileUtils.get_paths(self.good_files):
@@ -76,7 +82,7 @@ class DesktopTest:
             Image.make_screenshot(f"{join(self.report.dir, f'{self.version}_{self.host_name}_open_editor.png')}")
 
     def check_installed(self):
-        installed_version = self.package.get_version()
+        installed_version = self.desktop.version()
         if self.version != installed_version:
             self._write_results('NOT_INSTALLED')
             raise print(
@@ -101,6 +107,13 @@ class DesktopTest:
 
     def _get_report_files(self):
         return sorted(FileUtils.get_paths(self.report.dir), key=lambda x: x.endswith('.csv'))
+
+    @staticmethod
+    def _correct_version(version):
+        if len([i for i in version.split('.') if i]) == 4:
+            return True
+        print(f"[red]|WARNING| The version is not correct: {version}")
+        return False
 
     @staticmethod
     def _package(version: str, custom_config: str) -> Package:

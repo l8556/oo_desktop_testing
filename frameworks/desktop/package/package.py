@@ -22,33 +22,13 @@ class Package:
         self.package_path = join(self.download_dir, self.name)
         FileUtils.create_dir(self.download_dir, stdout=False)
 
-    def get(self) -> "bool | None":
-        if self.is_installed():
-            return
+    def get(self) -> "None":
         headers = FileUtils.get_headers(self.url)
         if self.check_package_exists(headers):
             print(f"[green]|INFO| OnlyOffice Package {basename(self.package_path)} already exists")
         else:
             self.download() if headers else print(f"[red]|WARNING| Package does not exist on aws")
         self.install()
-
-    def is_installed(self) -> bool:
-        if self.get_version() == self.version:
-            print(f'[green]|INFO| OnlyOffice Desktop version: {self.version} already installed[/]')
-            return True
-        return False
-
-    @staticmethod
-    def _correct_version(version):
-        if len([i for i in version.split('.') if i]) == 4:
-            return True
-        print(f"[red]|WARNING| The version is not correct: {version}")
-        return False
-
-    @staticmethod
-    def get_version() -> "str | None":
-        version = re.findall(r"\d+\.\d+\.\d+\.\d+", FileUtils.output_cmd('onlyoffice-desktopeditors --version'))
-        return version[0] if version else print(f"[bold red]|WARNING| Unable to get an installed version of OnlyOffice Desktop")
 
     @highlighter(color='green')
     def download(self) -> None:

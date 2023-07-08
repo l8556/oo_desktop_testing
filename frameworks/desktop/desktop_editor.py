@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import re
 from os.path import join, dirname
 from subprocess import Popen, PIPE
 from frameworks.host_control import HostInfo, FileUtils
@@ -23,6 +24,12 @@ class DesktopEditor:
             stdout=PIPE, stderr=PIPE, shell=True
         )
         return process
+
+    def version(self) -> "str | None":
+        version = re.findall(r"\d+\.\d+\.\d+\.\d+", FileUtils.output_cmd(f'{self._generate_running_command} --version'))
+        return version[0] if version else print(
+            f"[bold red]|WARNING| Unable to get an installed version of OnlyOffice Desktop"
+        )
 
     def close(self):
         # call('killall DesktopEditors', shell=True)
