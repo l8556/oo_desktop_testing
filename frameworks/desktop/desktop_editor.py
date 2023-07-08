@@ -27,9 +27,7 @@ class DesktopEditor:
 
     def version(self) -> "str | None":
         version = re.findall(r"\d+\.\d+\.\d+\.\d+", FileUtils.output_cmd(f'{self._generate_running_command} --version'))
-        return version[0] if version else print(
-            f"[bold red]|WARNING| Unable to get an installed version of OnlyOffice Desktop"
-        )
+        return version[0] if version else None
 
     def close(self):
         # call('killall DesktopEditors', shell=True)
