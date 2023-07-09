@@ -20,6 +20,7 @@ console = Console()
 
 class DesktopTest:
     def __init__(self, version: str, custom_config: str = None, display_on: bool = True, telegram: bool = False):
+        self.custom_config = custom_config
         self.telegram_report = telegram
         self.version = version
         self.display_on = display_on
@@ -74,6 +75,7 @@ class DesktopTest:
                 if output:
                     console.print(f"[cyan]|INFO|{output}")
                     if wait_msg in output:
+                        time.sleep(5) if self.custom_config else ...
                         self.check_error_on_screen()
                         break
             else:
