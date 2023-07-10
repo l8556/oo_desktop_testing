@@ -67,7 +67,7 @@ class Package:
             return f'sudo dpkg -i {self.package_path}'
         elif host_name in ['redos', 'fedora']:
             return f'sudo dnf localinstall {self.package_path} -y'
-        elif host_name in ['altlinux', 'opensuse', 'centos']:
+        elif host_name in ['altlinux', 'opensuse', 'centos', 'rosa']:
             return f'sudo rpm -i {self.package_path}'
         else:
             raise print(f"[red]|ERROR| Unable to generate a command to install the desktop package.\n"

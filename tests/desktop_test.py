@@ -75,7 +75,6 @@ class DesktopTest:
                 if output:
                     console.print(f"[cyan]|INFO|{output}")
                     if wait_msg in output:
-                        time.sleep(5) if self.custom_config else ...
                         self.check_error_on_screen()
                         break
             else:
