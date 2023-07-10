@@ -62,7 +62,7 @@ class Package:
 
     def _get_install_command(self):
         host_name = HostInfo().name().lower()
-        if host_name in ['debian', 'ubuntu', "linuxmint", 'pop']:
+        if host_name in ['debian', 'ubuntu', "linuxmint", 'pop', 'astra']:
             self._unlock_dpkg()
             return f'sudo dpkg -i {self.package_path}'
         elif host_name in ['redos', 'fedora']:
