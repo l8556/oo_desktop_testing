@@ -17,7 +17,7 @@ pyvirtualdisplay = "^3.0"
 mss = "^9.0.1"
 opencv-python = "^4.8.0.74"
 urllib3 = '1.26.6'
-
+pywinauto = '^0.6.8'
 
 [build-system]
 requires = ["poetry-core"]

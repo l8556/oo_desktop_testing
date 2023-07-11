@@ -10,6 +10,7 @@ from frameworks.host_control import FileUtils, HostInfo
 from frameworks.image_handler import Image
 from rich import print
 from rich.console import Console
+from pywinauto.keyboard import send_keys
 
 from pyvirtualdisplay import Display
 
@@ -75,6 +76,10 @@ class DesktopTest:
                 if output:
                     console.print(f"[cyan]|INFO|{output}")
                     if wait_msg in output:
+                        if self.custom_config:
+                            time.sleep(2)
+                            send_keys("{ENTER}")
+                            time.sleep(2)
                         self.check_error_on_screen()
                         break
             else:
