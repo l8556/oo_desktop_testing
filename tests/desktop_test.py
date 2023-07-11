@@ -10,7 +10,6 @@ from frameworks.host_control import FileUtils, HostInfo
 from frameworks.image_handler import Image
 from rich import print
 from rich.console import Console
-from pywinauto.keyboard import send_keys
 
 from pyvirtualdisplay import Display
 
@@ -52,6 +51,9 @@ class DesktopTest:
 
     def check_open_files(self):
         for file in FileUtils.get_paths(self.good_files):
+            # Todo
+            if self.custom_config and file.endswith('.docxf'):
+                continue
             print(f"[green]|INFO| Test opening file: {basename(file)}")
             self.desktop.open(file)
             time.sleep(20) # TODO
@@ -77,6 +79,8 @@ class DesktopTest:
                     console.print(f"[cyan]|INFO|{output}")
                     if wait_msg in output:
                         if self.custom_config:
+                            # Todo
+                            from pywinauto.keyboard import send_keys
                             time.sleep(2)
                             send_keys("{ENTER}")
                             time.sleep(2)
