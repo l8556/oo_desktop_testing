@@ -56,7 +56,7 @@ class DesktopTest:
                 continue
             print(f"[green]|INFO| Test opening file: {basename(file)}")
             self.desktop.open(file)
-            time.sleep(20) # TODO
+            time.sleep(25) # TODO
             self.check_error_on_screen()
             Image.make_screenshot(f"{join(self.report.dir, f'{self.version}_{self.host_name}_{basename(file)}.png')}")
 
