@@ -8,10 +8,10 @@ from tests.desktop_test import DesktopTest
 
 
 @task
-def desktop_test(c, version=None, display=False, custom_config=False, telegram=False):
+def desktop_test(c, version=None, display=False, custom_config=None, telegram=False):
     DesktopTest(
         version=version,
         display_on=True if not display else False,
-        custom_config=join(os.getcwd(), 'custom_config.json') if custom_config else None,
+        custom_config=custom_config if custom_config else None,
         telegram=telegram
     ).run()
