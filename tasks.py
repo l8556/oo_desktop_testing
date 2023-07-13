@@ -12,6 +12,6 @@ def desktop_test(c, version=None, display=False, custom_config=False, telegram=F
     DesktopTest(
         version=version,
         display_on=True if not display else False,
-        custom_config=join(os.getcwd(), 'portal_config.json') if custom_config else None,
+        custom_config=join(os.getcwd(), 'custom_config.json') if custom_config else None,
         telegram=telegram
     ).run()
