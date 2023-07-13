@@ -15,4 +15,4 @@ class StaticData:
     img_template: str = join(project_dir, 'tests', 'assets', 'image_template')
     bad_files_dir: str = join(project_dir, 'tests', 'assets', 'bad_files')
     good_files_dir: str = join(project_dir, 'tests', 'assets', 'good_files')
-    lic_file_path: str = join(project_dir, 'assets', 'test_lic.lickey')
+    lic_file_path: str = join(project_dir, 'tests', 'assets', 'test_lic.lickey')
