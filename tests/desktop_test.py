@@ -65,7 +65,7 @@ class DesktopTest:
         for img in FileUtils.get_paths(join(self.img_dir, 'errors')):
             if Image.is_image_present(img):
                 Image.make_screenshot(f"{join(self.report.dir, f'{self.version}_{self.host_name}_error_screen.png')}")
-                self._write_results('ERROR_ON_SCREEN')
+                self._write_results('ERROR')
                 raise print(f"[red]|ERROR| An error has been detected.")
 
     def wait_until_open(self, process, wait_msg, timeout=30):
@@ -74,8 +74,6 @@ class DesktopTest:
             while time.time() - start_time < timeout:
                 status.update(f'[green]|INFO| Wait until the editor opens')
                 output = process.stdout.readline().decode().strip()
-                # errors = process.stderr.readline().decode().strip()
-                # console.print(errors) if errors else ...
                 if output:
                     console.print(f"[cyan]|INFO|{output}")
                     if wait_msg in output:
