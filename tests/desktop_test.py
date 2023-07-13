@@ -111,7 +111,7 @@ class DesktopTest:
         )
 
     def _get_report_files(self):
-        return sorted(FileUtils.get_paths(self.report.dir), key=lambda x: x.endswith('.csv'))
+        return FileUtils.get_paths(self.report.dir, extension='.png')
 
     @staticmethod
     def _correct_version(version):
