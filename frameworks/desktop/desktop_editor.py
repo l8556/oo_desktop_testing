@@ -50,6 +50,7 @@ class DesktopEditor:
         if self.custom_config:
             lic_file = FileUtils.read_json(self.custom_config).get(f"lic_path_{HostInfo().os}")
             if lic_file and isfile(self.lic_file_path):
+                FileUtils.create_dir(lic_file, stdout=False)
                 FileUtils.copy(self.lic_file_path, join(lic_file, basename(self.lic_file_path)))
                 print(f"[green]|INFO| Desktop activated")
 
