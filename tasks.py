@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
-from os.path import join
-
 from invoke import task
 
 from tests.desktop_test import DesktopTest

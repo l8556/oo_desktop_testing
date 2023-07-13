@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import os
 import re
-from os.path import join, dirname
+from os.path import join, dirname, isfile
 from subprocess import Popen, PIPE
 from frameworks.host_control import HostInfo, FileUtils
 
 
 class DesktopEditor:
-    def __init__(self, debug_mode: bool = False, custom_config: str = None):
+    def __init__(self, debug_mode: bool = False, custom_config: str = None, lic_file: str = None):
+        self.lic_file_path = lic_file
         self.custom_config = custom_config
         self.debug_mode = debug_mode
         self.os = HostInfo().os
@@ -43,6 +44,13 @@ class DesktopEditor:
     def create_log_file(self):
         FileUtils.create_dir(dirname(self.log_file), stdout=False)
         FileUtils.file_writer(self.log_file, '', mode='w')
+
+    def set_license(self):
+        if self.custom_config:
+            lic_file = FileUtils.read_json(self.custom_config).get(f"lic_path_{HostInfo().os}")
+            if lic_file and isfile(self.lic_file_path):
+                FileUtils.copy(self.lic_file_path, lic_file)
+                print(f"[green]|INFO| Desktop activated")
 
     def _generate_running_command(self):
         if self.os == 'linux':

@@ -29,7 +29,7 @@ class DesktopTest:
         self._create_display()
         self.report = DesktopReport(StaticData.reports_dir, self.version)
         self.host_name = re.sub(r"[\s/]", "", HostInfo().name(pretty=True))
-        self.desktop = DesktopEditor(debug_mode=True, custom_config=custom_config)
+        self.desktop = DesktopEditor(debug_mode=True, custom_config=custom_config, lic_file=StaticData.lic_file_path)
         self.img_dir = StaticData.img_template
         self.bad_files = StaticData.bad_files_dir
         self.good_files = StaticData.good_files_dir
