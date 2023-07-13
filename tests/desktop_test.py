@@ -74,8 +74,8 @@ class DesktopTest:
             while time.time() - start_time < timeout:
                 status.update(f'[green]|INFO| Wait until the editor opens')
                 output = process.stdout.readline().decode().strip()
-                errors = process.stderr.readline().decode().strip()
-                console.print(errors) if errors else ...
+                # errors = process.stderr.readline().decode().strip()
+                # console.print(errors) if errors else ...
                 if output:
                     console.print(f"[cyan]|INFO|{output}")
                     if wait_msg in output:
