@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import re
-from os.path import join, dirname, isfile
+from os.path import join, dirname, isfile, basename
 from subprocess import Popen, PIPE
 from frameworks.host_control import HostInfo, FileUtils
 
@@ -49,7 +49,7 @@ class DesktopEditor:
         if self.custom_config:
             lic_file = FileUtils.read_json(self.custom_config).get(f"lic_path_{HostInfo().os}")
             if lic_file and isfile(self.lic_file_path):
-                FileUtils.copy(self.lic_file_path, lic_file)
+                FileUtils.copy(self.lic_file_path, join(lic_file, basename(self.lic_file_path)))
                 print(f"[green]|INFO| Desktop activated")
 
     def _generate_running_command(self):
