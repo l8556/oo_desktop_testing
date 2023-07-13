@@ -4,6 +4,7 @@ import re
 from os.path import join, dirname, isfile, basename
 from subprocess import Popen, PIPE
 from frameworks.host_control import HostInfo, FileUtils
+from rich import print
 
 
 class DesktopEditor:
