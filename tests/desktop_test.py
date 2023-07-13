@@ -37,6 +37,7 @@ class DesktopTest:
     def run(self):
         self._install_package()
         self.check_installed()
+        self.desktop.set_license()
         self.wait_until_open(self.desktop.open(), '[DesktopEditors]: start page loaded')
         self.check_open_files()
         self._write_results(f'Passed')
