@@ -54,6 +54,12 @@ class Telegram:
             )
 
     def send_media_group(self, document_paths: list, caption: str = None, media_type: str = 'document') -> None:
+        '''
+        :param document_paths:
+        :param caption:
+        :param media_type: types: 'photo', 'video', 'audio', 'document', 'voice', 'animation'
+        :return:
+        '''
         if self._access:
             if caption and len(caption)  > 200:
                 document_paths.append(self._make_massage_doc(caption, 'caption.txt'))
