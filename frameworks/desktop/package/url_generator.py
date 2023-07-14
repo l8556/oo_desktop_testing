@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
 from os.path import isfile, join, dirname, realpath
-
-from .portal import Portal
 from frameworks.host_control import HostInfo, FileUtils
-from ...handlers.VersionHandler import VersionHandler
+from frameworks.desktop.handlers.VersionHandler import VersionHandler
+from ..data import Data
 
-class OnlyOfficePortal(Portal):
-    def __init__(self, version: str, custom_config: str = None):
-        self.version_handler = VersionHandler(version)
+class UrlGenerator:
+    def __init__(self, data: Data):
+        self.version_handler = VersionHandler(data.version)
         self.host_name = HostInfo().name().lower()
         self.host_version = HostInfo().version
         self.version = self.version_handler.version
         self.major_version = self.version_handler.major_version
         self.minor_version = self.version_handler.minor_version
         self.build = self.version_handler.build
-        self.config = self._get_config(custom_config)
+        self.config = self._get_config(data.custom_config_path)
         self.cef103_system: list = self.config.get('cef103_system') # f"{HostInfo().name().lower()} {HostInfo().version}"
         print(f"[green]|INFO| Host Information: {self.host_name} {HostInfo().version}")
 
@@ -50,7 +49,7 @@ class OnlyOfficePortal(Portal):
         config = self.config.get(key)
         if config:
             return config
-        raise print(f"[red]|ERROR| Can't get config by key: {key}")
+        raise ValueError(f"[red]|ERROR|UrlGenerator| Can't get config by key: {key}")
 
     @property
     def _os(self):
@@ -66,5 +65,5 @@ class OnlyOfficePortal(Portal):
 
     @staticmethod
     def _get_config(path: str):
-        config = path if path and isfile(path) else join(dirname(realpath(__file__)), 'default_config.json')
-        return FileUtils.read_json(config)
+        config_path = path if path and isfile(path) else join(dirname(realpath(__file__)), 'url_config.json')
+        return FileUtils.read_json(config_path)

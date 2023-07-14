@@ -1,19 +1,22 @@
 # -*- coding: utf-8 -*-
-import os
 import re
-from os.path import join, dirname, isfile, basename
+from os.path import join, dirname, isfile, basename, realpath
 from subprocess import Popen, PIPE
 from frameworks.host_control import HostInfo, FileUtils
 from rich import print
 
+from .package import Package
+from .data import Data
+
 
 class DesktopEditor:
-    def __init__(self, debug_mode: bool = False, custom_config: str = None, lic_file: str = None):
-        self.lic_file_path = lic_file
-        self.custom_config = custom_config
-        self.debug_mode = debug_mode
+    def __init__(self, data: Data):
+        self.lic_file_path = data.lic_file
+        self.debug_mode = data.debug_mode
+        self.config = self._get_config(data.custom_config_path)
+        self.package = Package(data)
         self.os = HostInfo().os
-        self.tmp_dir = join(os.getcwd(), "tmp")
+        self.tmp_dir = data.tmp_dir
         self.log_file = join(self.tmp_dir, "desktop.log")
         self.create_log_file()
         self.debug_command = f'--ascdesktop-log-file={"stdout" if HostInfo().os != "windows" else self.log_file}'
@@ -32,7 +35,8 @@ class DesktopEditor:
         return version[0] if version else None
 
     def close(self):
-        # call('killall DesktopEditors', shell=True)
+        # Todo
+        # call('killall DesktopEditors', shell=True) -> segmentation fault in stdout
         ...
 
     def read_log(self, wait_msg):
@@ -47,24 +51,21 @@ class DesktopEditor:
         FileUtils.file_writer(self.log_file, '', mode='w')
 
     def set_license(self):
-        if self.custom_config:
-            lic_file = FileUtils.read_json(self.custom_config).get(f"lic_path_{HostInfo().os}")
-            if lic_file and isfile(self.lic_file_path):
-                FileUtils.create_dir(lic_file, stdout=False)
-                FileUtils.copy(self.lic_file_path, join(lic_file, basename(self.lic_file_path)))
-                print(f"[green]|INFO| Desktop activated")
+        license_dir = self.config.get(f"lic_dir_{HostInfo().os}")
+        if license_dir:
+            if license_dir and isfile(self.lic_file_path):
+                FileUtils.create_dir(license_dir, stdout=False)
+                FileUtils.copy(self.lic_file_path, join(license_dir, basename(self.lic_file_path)))
+                return print(f"[green]|INFO| Desktop activated")
+        print("[green]|INFO| Free license")
 
     def _generate_running_command(self):
-        if self.os == 'linux':
-            if self.custom_config:
-                return FileUtils.read_json(self.custom_config)['linux_run_command']
-            return 'onlyoffice-desktopeditors'
-        elif self.os == 'mac':
-            if self.custom_config:
-                return FileUtils.read_json(self.custom_config)['mac_run_command']
-            return '/Applications/ONLYOFFICE.app/Contents/MacOS/ONLYOFFICE'
-        elif self.os == 'windows':
-            if self.custom_config:
-                return FileUtils.read_json(self.custom_config)['windows_run_command']
-        else:
-            raise print(f"[red]|ERROR| Can't verify OS")
+        run_cmd = self.config.get(f'{HostInfo().os}_run_command')
+        if run_cmd:
+            return run_cmd
+        raise ValueError(f"[red]|ERROR| Can't get running command, key: {HostInfo().os}_run_command")
+
+    @staticmethod
+    def _get_config(path):
+        config_path = path if path and isfile(path) else join(dirname(realpath(__file__)), 'desktop_config.json')
+        return FileUtils.read_json(config_path)
