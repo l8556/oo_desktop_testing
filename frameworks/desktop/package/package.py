@@ -1,24 +1,21 @@
-import re
-from subprocess import call, getoutput
-
-from .Portal import Portal
+from subprocess import call
 from rich import print
 
 from frameworks.host_control import FileUtils, HostInfo
 from frameworks.decorators.decorators import highlighter
 from os.path import join, isfile, basename, getsize
-
-from ..desktop_data import  DesktopData
+from .url_generator import UrlGenerator
+from ..data import Data
 
 
 class Package:
-    def __init__(self, package_portal: Portal, config_data: DesktopData):
-        self.package_portal = package_portal
+    def __init__(self, data: Data):
+        self.url_generator = UrlGenerator(data)
         self.os = HostInfo().name(pretty=True)
-        self.url =  self.package_portal.url
-        self.name: str = self.package_portal.package_name
-        self.version = config_data.version
-        self.download_dir = config_data.cache_dir if config_data.cache_dir else config_data.tmp_dir
+        self.url =  self.url_generator.url
+        self.name: str = self.url_generator.package_name
+        self.version = data.version
+        self.download_dir = data.cache_dir if data.cache_dir else data.tmp_dir
         self.package_path = join(self.download_dir, self.name)
         FileUtils.create_dir(self.download_dir, stdout=False)
 

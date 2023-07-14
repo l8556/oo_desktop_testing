@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-from os.path import join
+from os.path import dirname
 
-import config
 from frameworks.host_control import FileUtils
 from tests.tools.report import Report
 
 
 class DesktopReport:
-    def __init__(self, reports_dir: str, version: str):
-        self.dir = join(reports_dir, version)
-        self.path = join(self.dir, f"{version}_desktop_report.csv")
+    def __init__(self, report_path: str):
+        self.path = report_path
+        self.dir = dirname(self.path)
         FileUtils.create_dir(self.dir, stdout=False)
         self._writer(self.path, 'w', [ 'Os', 'Version', 'Package_name', 'Exit_code'])
 
