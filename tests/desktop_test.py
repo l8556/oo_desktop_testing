@@ -112,6 +112,7 @@ class DesktopTest:
         pkg_name = re.sub(r"[\s/_]", "", self.desktop.package.name)
         Telegram().send_media_group(
             document_paths=self._get_report_files(),
+            media_type='photo',
             caption=f'Os: `{HostInfo().name(pretty=True)}`\n'
                     f'Version: `{self.version}`\n'
                     f'Package: `{pkg_name}`\n'
