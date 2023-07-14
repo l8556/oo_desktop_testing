@@ -5,7 +5,6 @@ from os.path import join, getsize, basename, isdir, expanduser, isfile
 import requests
 from rich import print
 
-import config
 from frameworks.StaticData import StaticData
 from frameworks.decorators import singleton
 from frameworks.host_control import FileUtils
