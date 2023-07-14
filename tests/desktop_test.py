@@ -62,7 +62,7 @@ class DesktopTest:
     def check_open_files(self):
         for file in FileUtils.get_paths(self.good_files):
             if basename(file) in self.config.get('exception_files') if self.config.get('exception_files') else []:
-                print(f"['cyan']|INFO| File `{basename(file)}` skipped to open.")
+                print(f"[green]|INFO| File `{basename(file)}` skipped to open.")
                 continue
             print(f"[green]|INFO| Test opening file: {basename(file)}")
             self.desktop.open(file)
